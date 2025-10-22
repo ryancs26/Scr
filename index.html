@@ -139,5 +139,150 @@
       box-shadow: 0 10px 22px rgba(9,116,243,.22), inset 0 1px 0 rgba(255,255,255,.35);
       transition: transform .12s ease, box-shadow .12s ease;
     }
-    .btn:hover{ transform: translateY(-1px); box-sha
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 26px rgba(9,116,243,.26) }
+
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px; font-weight:700;
+      background: var(--chip-fill); border:1px solid var(--chip-line);
+      color:#234a88; text-transform:uppercase; font-size:11px; letter-spacing:.35px;
+    }
+
+    .icon-btn{
+      width:42px; height:42px; display:grid; place-items:center;
+      border-radius: 12px; border:1px solid var(--line);
+      background:#fff; cursor:pointer; transition:.15s ease;
+      box-shadow: var(--shadow-s);
+    }
+    .icon-btn:hover{ transform: translateY(-1px) }
+
+    .mono{ font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace }
+
+    /* ================== RESPONSIVE (Card list mode) ================== */
+    @media (max-width: 980px){
+      .card-head{ display:none }
+      thead{ display:none }
+      table, tbody, tr, td { display:block; width:100% }
+      tbody tr{
+        margin: 14px; border:1px solid var(--line-2);
+        border-radius: 16px; overflow:hidden; box-shadow: var(--shadow-s);
+      }
+      tbody td{ border:none; border-top:1px solid var(--line) }
+      tbody td[data-label]{ display:flex; justify-content:space-between; gap:12px }
+      tbody td[data-label]::before{ content: attr(data-label); color: var(--muted); font-weight:600 }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- App bar -->
+  <header class="appbar">
+    <button class="ham" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="#0974f3" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="title">C1 : Sydney Retina Clinic And Day Surgery - 13/187 Macq</div>
+  </header>
+
+  <main class="wrap">
+    <!-- Search row -->
+    <div class="toolbar">
+      <div class="search-wrap" role="search">
+        <div class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7.5" stroke="#9baac1" stroke-width="2"></circle>
+            <path d="M20 20l-3.5-3.5" stroke="#9baac1" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+          <input id="search" type="search" placeholder="Search clinics, suburbs, specialties, tags…" autocomplete="off" aria-label="Search clinics" />
+        </div>
+      </div>
+
+      <div class="count"><span id="rowCount" class="mono">3</span> results</div>
+    </div>
+
+    <!-- Table card -->
+    <section class="card" aria-label="Clinic list">
+      <div class="card-head"></div>
+      <table id="clinicTable">
+        <thead>
+          <tr>
+            <th scope="col" style="width:120px">Action</th>
+            <th scope="col">Abbrev.</th>
+            <th scope="col">Printed Name</th>
+            <th scope="col">Suburb</th>
+            <th scope="col">Schedule</th>
+            <th scope="col">Specialty</th>
+            <th scope="col">Tags</th>
+            <th scope="col">Actions</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row: C10 -->
+          <tr>
+            <td data-label="Action"><button class="btn">USE</button></td>
+            <td data-label="Abbrev." class="mono">C10</td>
+            <td data-label="Printed Name">Central Brisbane Eye Clinic</td>
+            <td data-label="Suburb">Brisbane, QLD</td>
+            <td data-label="Schedule">—</td>
+            <td data-label="Specialty"><span class="chip">OTHER</span></td>
+            <td data-label="Tags"><span class="chip">IVI</span></td>
+            <td data-label="Actions">
+              <button class="icon-btn" title="Edit C10" aria-label="Edit C10">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"/>
+                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"/>
+                </svg>
+              </button>
+            </td>
+            <td data-label="Status">—</td>
+          </tr>
+
+          <!-- Row: C11 -->
+          <tr>
+            <td data-label="Action"><button class="btn">USE</button></td>
+            <td data-label="Abbrev." class="mono">C11</td>
+            <td data-label="Printed Name">PersonalEYES Parramatta</td>
+            <td data-label="Suburb">Parramatta, NSW</td>
+            <td data-label="Schedule">—</td>
+            <td data-label="Specialty"><span class="chip">OTHER</span></td>
+            <td data-label="Tags"><span class="chip">IVI</span></td>
+            <td data-label="Actions">
+              <button class="icon-btn" title="Edit C11" aria-label="Edit C11">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"/>
+                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"/>
+                </svg>
+              </button>
+            </td>
+            <td data-label="Status">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    // Tiny filter to match the behavior you've shown
+    const search = document.getElementById('search');
+    const table  = document.getElementById('clinicTable');
+    const rows   = Array.from(table.tBodies[0].rows);
+    const count  = document.getElementById('rowCount');
+
+    function filter(){
+      const q = search.value.toLowerCase().trim();
+      let visible = 0;
+      rows.forEach(tr => {
+        const match = tr.innerText.toLowerCase().includes(q);
+        tr.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+      count.textContent = visible;
+    }
+    search.addEventListener('input', filter);
+    filter(); // initial
+  </script>
+</body>
+</html>
 
