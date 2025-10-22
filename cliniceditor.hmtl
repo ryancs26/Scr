@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clinic Editor</title>
+
+  <style>
+    /* ================== TOKENS (Light) ================== */
+    :root{
+      --brand: #0974f3;
+      --brand-dark: #075ec4;
+      --ink: #0b1b33;
+      --ink-2: #21324d;
+      --muted: #6e7a90;
+      --line: #e6edf5;
+      --line-2: #dfe7f2;
+      --bg: #f6f9fe;
+      --bg-grad-1: rgba(9,116,243,.08);
+      --bg-grad-2: rgba(9,116,243,.05);
+      --surface: #ffffff;
+      --surface-2: #f3f7fd;
+      --chip-fill: #f0f6ff;
+      --chip-line: #d7e8ff;
+      --shadow-s: 0 4px 14px rgba(15,25,40,.06);
+      --shadow-m: 0 12px 30px rgba(15,25,40,.08);
+      --radius-lg: 14px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --focus: 0 0 0 4px rgba(9,116,243,.14);
+      --danger: #e11d48;
+      --danger-2: #b40f34;
+      --ok: #0ea5e9;
+    }
+
+    *{ box-sizing: border-box }
+    html,body{ height:100% }
+    body{
+      margin:0;
+      font: 15px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--ink);
+      background:
+        radial-gradient(900px 380px at -10% -10%, var(--bg-grad-1), transparent 65%),
+        radial-gradient(900px 380px at 120% -15%, var(--bg-grad-2), transparent 65%),
+        var(--bg);
+    }
+
+    /* ================== APP BAR ================== */
+    .appbar{
+      position:sticky; top:0; z-index:20;
+      display:flex; align-items:center; gap:14px;
+      padding:12px 16px;
+      background: linear-gradient(180deg, #fff, #ffffffd6 65%, #ffffffb8);
+      border-bottom:1px solid var(--line);
+      backdrop-filter: saturate(1.05) blur(6px);
+    }
+    .ham{
+      width:40px; height:40px; display:grid; place-items:center;
+      border-radius: var(--radius-sm);
+      border:1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow-s);
+      cursor:pointer; transition:.16s ease;
+    }
+    .ham:hover{ transform: translateY(-1px) }
+    .title{
+      font-weight:800; letter-spacing:.2px;
+      font-size: clamp(15px, 2.2vw, 20px);
+      color: var(--ink-2);
+    }
+
+    .wrap{ max-width: 1100px; margin: 18px auto 64px; padding: 0 16px }
+
+    /* ================== HEADER / TABS ================== */
+    .header-card{
+      background: var(--surface);
+      border:1px solid var(--line-2);
+      border-radius: 16px;
+      box-shadow: var(--shadow-m);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .subtitle{ color:var(--muted); margin-top:6px; }
+
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;
+    }
+    .tab{
+      appearance:none; border:1px solid var(--line-2);
+      background:#fff; color:var(--ink-2);
+      padding:10px 14px; border-radius: 999px; cursor:pointer;
+      font-weight:700; letter-spacing:.2px;
+    }
+    .tab[aria-selected="true"]{
+      border-color: color-mix(in oklab, var(--brand) 40%, var(--line-2));
+      background: color-mix(in oklab, var(--brand) 10%, #fff);
+      box-shadow: inset 0 0 0 1px var(--brand), var(--shadow-s);
+      color:#0a2a66;
+    }
+
+    /* ================== PANEL ================== */
+    .panel{
+      background: var(--surface);
+      border:1px solid var(--line-2);
+      border-radius: 16px;
+      box-shadow: var(--shadow-m);
+      padding: 18px;
+      display:none;
+    }
+    .panel.active{ display:block }
+
+    /* ================== FORMS ================== */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    .field{ display:flex; flex-direction:column; gap:6px }
+    .label{ font-weight:700; color:var(--ink-2) }
+    .hint{ color:var(--muted); font-size:12.5px }
+    .input, .select, .textarea{
+      border:1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      background:#fff; color:var(--ink);
+      outline: none;
+      transition: box-shadow .15s, border-color .15s;
+    }
+    .textarea{ min-height: 96px; resize: vertical }
+    .input:focus, .select:focus, .textarea:focus{
+      border-color: var(--brand);
+      box-shadow: inset 0 0 0 1px var(--brand), var(--focus);
+    }
+
+    .row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap }
+
+    .btn{
+      display:inline-grid; place-items:center;
+      height:40px; padding:0 16px;
+      border-radius: 12px; border:none; cursor:pointer;
+      font-weight:800; letter-spacing:.2px; color:#fff;
+      background: linear-gradient(180deg, var(--brand), var(--brand-dark));
+      box-shadow: 0 10px 22px rgba(9,116,243,.22), inset 0 1px 0 rgba(255,255,255,.35);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 26px rgba(9,116,243,.26) }
+
+    .btn-ghost{
+      background:#fff; color: var(--ink-2);
+      border:1px solid var(--line-2);
+      box-shadow: var(--shadow-s);
+    }
+
+    .btn-danger{
+      background: linear-gradient(180deg, var(--danger), var(--danger-2));
+      box-shadow: 0 10px 22px rgba(225,29,72,.18);
+    }
+
+    /* ================== SWITCH ================== */
+    .switch{
+      --w: 42px; --h: 24px;
+      position:relative; width:var(--w); height:var(--h);
+      border-radius:999px; background:#e9eff7; border:1px solid var(--line-2);
+      cursor:pointer; transition:.15s ease;
+    }
+    .switch::after{
+      content:""; position:absolute; top:2px; left:2px;
+      width:20px; height:20px; border-radius:50%;
+      background:#fff; box-shadow: var(--shadow-s);
+      transition:left .15s ease;
+    }
+    .switch[data-on="true"]{
+      background: color-mix(in oklab, var(--brand) 30%, #e9f2ff);
+      border-color: color-mix(in oklab, var(--brand) 45%, var(--line-2));
+    }
+    .switch[data-on="true"]::after{ left: calc(var(--w) - 22px) }
+
+    .kv{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--line) }
+    .kv:last-child{ border-bottom:0 }
+
+    .danger-zone{
+      border:1px dashed #ffd7df; background:#fff5f7; color:#5e1221;
+      padding:14px; border-radius:14px;
+    }
+
+    @media (max-width: 860px){
+      .grid{ grid-template-columns: 1fr }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- App bar -->
+  <header class="appbar">
+    <button class="ham" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18" stroke="#0974f3" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="title">Clinic Editor</div>
+  </header>
+
+  <main class="wrap">
+    <!-- Header + tabs -->
+    <section class="header-card">
+      <div style="font-weight:800; font-size:18px; color:var(--ink-2)">C1 : Sydney Retina Clinic And Day Surgery</div>
+      <div class="subtitle">Edit clinic configuration, contacts, and operational options.</div>
+
+      <nav class="tabs" role="tablist" aria-label="Editor sections">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="p-user"   id="t-user">User</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-doctor" id="t-doctor">Doctor</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-settings" id="t-settings">Settings</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-flags"  id="t-flags">Feature Flags</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-maint"  id="t-maint">Maintenance</button>
+      </nav>
+    </section>
+
+    <!-- Panels -->
+    <section class="panel active" id="p-user" role="tabpanel" aria-labelledby="t-user">
+      <div class="grid">
+        <div class="field">
+          <label class="label" for="uName">Primary Contact Name</label>
+          <input class="input" id="uName" placeholder="e.g., Jane Smith" />
+        </div>
+        <div class="field">
+          <label class="label" for="uEmail">Contact Email</label>
+          <input class="input" id="uEmail" type="email" placeholder="name@clinic.com" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="uPhone">Contact Phone</label>
+          <input class="input" id="uPhone" placeholder="+61 ..." />
+        </div>
+        <div class="field">
+          <label class="label" for="uRole">Role</label>
+          <select class="select" id="uRole">
+            <option>Administrator</option>
+            <option>Coordinator</option>
+            <option>Reception</option>
+          </select>
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <label class="label" for="uNotes">Notes</label>
+          <textarea class="textarea" id="uNotes" placeholder="Anything relevant about this contact…"></textarea>
+          <div class="hint">Only visible to internal staff.</div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn">Save</button>
+        <button class="btn btn-ghost">Cancel</button>
+      </div>
+    </section>
+
+    <section class="panel" id="p-doctor" role="tabpanel" aria-labelledby="t-doctor">
+      <div class="grid">
+        <div class="field">
+          <label class="label" for="dName">Doctor Name</label>
+          <input class="input" id="dName" placeholder="e.g., Dr. Alex Nguyen" />
+        </div>
+        <div class="field">
+          <label class="label" for="dAHPRA">AHPRA / Provider No.</label>
+          <input class="input" id="dAHPRA" placeholder="e.g., 123456" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="dSpecialty">Specialty</label>
+          <select class="select" id="dSpecialty">
+            <option>Ophthalmology</option>
+            <option>Retina</option>
+            <option>Glaucoma</option>
+            <option>General</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="dEmail">Doctor Email</label>
+          <input class="input" id="dEmail" type="email" placeholder="dr.name@clinic.com" />
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <label class="label" for="dBio">Bio / Notes</label>
+          <textarea class="textarea" id="dBio" placeholder="Short bio, room preferences, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn">Save</button>
+        <button class="btn btn-ghost">Cancel</button>
+      </div>
+    </section>
+
+    <section class="panel" id="p-settings" role="tabpanel" aria-labelledby="t-settings">
+      <div class="grid">
+        <div class="field">
+          <label class="label" for="sTimezone">Timezone</label>
+          <select class="select" id="sTimezone">
+            <option>Australia/Sydney (AEST/AEDT)</option>
+            <option>Australia/Brisbane (AEST)</option>
+            <option>Australia/Perth (AWST)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="sLocale">Locale</label>
+          <select class="select" id="sLocale">
+            <option>English (Australia)</option>
+            <option>English (US)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label" for="sAddress">Street Address</label>
+          <input class="input" id="sAddress" placeholder="13/187 Macquarie St…" />
+        </div>
+        <div class="field">
+          <label class="label" for="sSuburb">Suburb</label>
+          <input class="input" id="sSuburb" placeholder="Sydney, NSW" />
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <label class="label" for="sNotes">Internal Notes</label>
+          <textarea class="textarea" id="sNotes" placeholder="E.g., parking instructions, lift access, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn">Save Settings</button>
+        <button class="btn btn-ghost">Discard</button>
+      </div>
+    </section>
+
+    <section class="panel" id="p-flags" role="tabpanel" aria-labelledby="t-flags">
+      <div class="kv">
+        <div>
+          <div class="label">Enable IVI Workflow</div>
+          <div class="hint">Show IVI tagging and appointment steps.</div>
+        </div>
+        <div class="switch" data-flag="ivi" tabindex="0" role="switch" aria-checked="false"></div>
+      </div>
+
+      <div class="kv">
+        <div>
+          <div class="label">Require Approval Before Use</div>
+          <div class="hint">Locks scheduling until a manager approves.</div>
+        </div>
+        <div class="switch" data-flag="approval" tabindex="0" role="switch" aria-checked="false"></div>
+      </div>
+
+      <div class="kv">
+        <div>
+          <div class="label">Beta UI</div>
+          <div class="hint">Opt this clinic into preview features.</div>
+        </div>
+        <div class="switch" data-flag="beta" tabindex="0" role="switch" aria-checked="true" data-on="true" aria-label="Beta UI"></div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn">Save Flags</button>
+        <button class="btn btn-ghost">Revert</button>
+      </div>
+    </section>
+
+    <section class="panel" id="p-maint" role="tabpanel" aria-labelledby="t-maint">
+      <div class="grid">
+        <div class="field">
+          <div class="label">Maintenance Window</div>
+          <div class="row">
+            <input class="input" type="datetime-local" />
+            <input class="input" type="datetime-local" />
+            <button class="btn">Schedule</button>
+          </div>
+          <div class="hint">Users will see a banner during maintenance.</div>
+        </div>
+
+        <div class="field">
+          <div class="label">Health Checks</div>
+          <div class="row">
+            <button class="btn">Run Diagnostics</button>
+            <button class="btn btn-ghost">Download Logs</button>
+          </div>
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <div class="label">Danger Zone</div>
+          <div class="danger-zone">
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <div style="font-weight:700">Archive Clinic</div>
+                <div class="hint">Hides this clinic from scheduling and search. Reversible.</div>
+              </div>
+              <button class="btn btn-danger" id="btnArchive">Archive</button>
+            </div>
+            <hr style="border:none;border-top:1px dashed #ffd7df; margin:12px 0" />
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <div style="font-weight:700">Delete Clinic</div>
+                <div class="hint">Permanently removes all records. This action cannot be undone.</div>
+              </div>
+              <button class="btn btn-danger" id="btnDelete">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // -------- Tabs
+    const tabs   = Array.from(document.querySelectorAll('.tab'));
+    const panels = {
+      't-user'    : document.getElementById('p-user'),
+      't-doctor'  : document.getElementById('p-doctor'),
+      't-settings': document.getElementById('p-settings'),
+      't-flags'   : document.getElementById('p-flags'),
+      't-maint'   : document.getElementById('p-maint'),
+    };
+
+    function activate(id){
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t.id === id)));
+      Object.values(panels).forEach(p => p.classList.remove('active'));
+      panels[id].classList.add('active');
+    }
+    tabs.forEach(t => t.addEventListener('click', () => activate(t.id)));
+
+    // -------- Switches
+    document.querySelectorAll('.switch').forEach(sw => {
+      const set = (on) => {
+        sw.dataset.on = on ? 'true' : '';
+        sw.setAttribute('aria-checked', String(on));
+      };
+      sw.addEventListener('click', () => set(!/true/.test(sw.dataset.on||'')));
+      sw.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); set(!/true/.test(sw.dataset.on||'')); }
+      });
+    });
+
+    // -------- Danger actions
+    const confirmDo = (msg, cb) => { if (confirm(msg)) cb?.(); };
+    document.getElementById('btnArchive')?.addEventListener('click', () =>
+      confirmDo('Archive this clinic? You can restore it later.', () => alert('Clinic archived'))
+    );
+    document.getElementById('btnDelete')?.addEventListener('click', () =>
+      confirmDo('Delete this clinic PERMANENTLY? This cannot be undone.', () => alert('Clinic deleted'))
+    );
+  </script>
+</body>
+</html>
