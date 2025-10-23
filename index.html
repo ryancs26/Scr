@@ -138,7 +138,7 @@
       width: 42px; height: 42px; display: grid; place-items: center;
       border-radius: 12px; background: #fff; border: 1px solid var(--line);
       cursor: pointer; box-shadow: var(--shadow-s); transition: .15s ease;
-      text-decoration: none; /* safe for <a> */
+      text-decoration: none; /* for <a> */
     }
     .icon-btn:hover{ transform: translateY(-1px) }
 
@@ -210,7 +210,7 @@
             <th scope="col">Schedule</th>
             <th scope="col">Specialty</th>
             <th scope="col">Tags</th>
-            <th scope="col">Edit</th> <!-- renamed from Actions -->
+            <th scope="col">Edit</th>
             <th scope="col">Status</th>
           </tr>
         </thead>
@@ -225,14 +225,16 @@
             <td data-label="Suburb">NSW</td>
             <td data-label="Schedule">—</td>
             <td data-label="Specialty"><span class="chip">OTHER</span></td>
-            <td data-label="Tags"><span class="chip">Approval</span></td>
+            <td data-label="Tags"><span class="chip">APPROVAL</span></td>
 
-            <!-- Edit column (icon button linking to editor) -->
+            <!-- Edit column (icon button linking to editor; absolute path + encoded params) -->
             <td data-label="Edit">
-              <a class="icon-btn edit-link" href="cliniceditor.html" title="Edit C1" aria-label="Edit C1">
+              <a class="icon-btn"
+                 href="/cliniceditor.html?abbrev=C1&name=Sydney%20Retina%20Clinic%20And%20Day%20Surgery%20-%2013%2F187%20Macq"
+                 title="Edit C1" aria-label="Edit C1">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"/>
-                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"/>
+                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"></path>
+                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"></path>
                 </svg>
               </a>
             </td>
@@ -249,10 +251,12 @@
             <td data-label="Specialty"><span class="chip">OTHER</span></td>
             <td data-label="Tags"><span class="chip">IVI</span></td>
             <td data-label="Edit">
-              <a class="icon-btn edit-link" href="cliniceditor.html" title="Edit C10" aria-label="Edit C10">
+              <a class="icon-btn"
+                 href="/cliniceditor.html?abbrev=C10&name=Central%20Brisbane%20Eye%20Clinic"
+                 title="Edit C10" aria-label="Edit C10">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"/>
-                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"/>
+                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"></path>
+                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"></path>
                 </svg>
               </a>
             </td>
@@ -269,10 +273,12 @@
             <td data-label="Specialty"><span class="chip">OTHER</span></td>
             <td data-label="Tags"><span class="chip">IVI</span></td>
             <td data-label="Edit">
-              <a class="icon-btn edit-link" href="cliniceditor.html" title="Edit C11" aria-label="Edit C11">
+              <a class="icon-btn"
+                 href="/cliniceditor.html?abbrev=C11&name=PersonalEYES%20Parramatta"
+                 title="Edit C11" aria-label="Edit C11">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"/>
-                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"/>
+                  <path d="M4 15.5V20h4.5L19 9.5l-4.5-4.5L4 15.5z" stroke="#0974f3" stroke-width="1.6" fill="none"></path>
+                  <path d="M13.5 6l4.5 4.5" stroke="#0974f3" stroke-width="1.6"></path>
                 </svg>
               </a>
             </td>
@@ -284,7 +290,7 @@
   </main>
 
   <script>
-    // Search filter (unchanged)
+    // Simple search filter
     const search = document.getElementById('search');
     const table = document.getElementById('clinicTable');
     const rows = Array.from(table.tBodies[0].rows);
@@ -302,27 +308,6 @@
     }
     search.addEventListener('input', filter);
     filter(); // initial
-
-    // Build Edit links with query params so the editor knows which row was clicked
-    document.querySelectorAll('#clinicTable tbody tr').forEach(tr => {
-      const abbrevCell = tr.querySelector('td[data-label="Abbrev."]');
-      const nameCell   = tr.querySelector('td[data-label="Printed Name"]');
-      const editA      = tr.querySelector('a.edit-link');
-
-      if (!editA || !abbrevCell) return;
-
-      const abbrev = (abbrevCell.textContent || '').trim();
-      const name   = (nameCell?.textContent || '').trim();
-
-      // Build relative URL (works on GitHub Pages project sites)
-      const url = new URL('cliniceditor.html', location.href);
-      url.searchParams.set('abbrev', abbrev);
-      if (name) url.searchParams.set('name', name);
-
-      editA.href = url.pathname.split('/').pop() + url.search;
-      editA.title = `Edit ${abbrev}`;
-      editA.setAttribute('aria-label', `Edit ${abbrev}`);
-    });
   </script>
 </body>
 </html>
