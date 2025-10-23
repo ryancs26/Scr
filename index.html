@@ -19,7 +19,7 @@
         var(--bg);
     }
 
-    /* App bar with selection on the right */
+    /* App bar with selection on the left */
     .appbar{
       position:sticky;top:0;z-index:10;display:flex;gap:12px;align-items:center;padding:12px 16px;
       background:linear-gradient(180deg,#fff,#ffffffd9 65%,#ffffffb8);
@@ -27,11 +27,9 @@
     }
     .ham{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--line);
       background:#fff;box-shadow:var(--shadow-s);cursor:pointer}
-    .title{font-weight:800;letter-spacing:.2px;font-size:clamp(15px,2.2vw,20px);color:#0a1b39}
-    .spacer{flex:1}
     .selnav{
       display:flex;align-items:center;gap:10px;padding:6px 10px;background:#fff;border:1px solid var(--line-2);
-      border-radius:12px;box-shadow:var(--shadow-s);max-width:55vw
+      border-radius:12px;box-shadow:var(--shadow-s);max-width:65vw
     }
     .selnav .label{font-weight:800;color:#0a1b39}
     .selnav .value{font-weight:700;color:#1a2a4a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -40,6 +38,7 @@
       border:none;background:transparent;color:#5a6b84;cursor:pointer;font-weight:700;border-radius:10px;padding:6px 8px
     }
     .selnav .clear:hover{background:#f2f6fb}
+    .spacer{flex:1}
 
     .wrap{max-width:1200px;margin:18px auto 48px;padding:0 16px}
 
@@ -93,20 +92,21 @@
   </style>
 </head>
 <body>
-  <!-- App bar (selection on right) -->
+  <!-- App bar: menu + selection on the left -->
   <header class="appbar">
     <button class="ham" aria-label="Open menu">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M3 6h18M3 12h18M3 18h18" stroke="#0974f3" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
-    <div class="title">C1 : Sydney Retina Clinic And Day Surgery - 13/187 Macq</div>
-    <div class="spacer"></div>
+
     <div class="selnav" aria-live="polite">
       <span class="label">Selected:</span>
       <span id="selNavValue" class="value muted">No clinic selected</span>
       <button id="clearNav" class="clear" type="button" aria-label="Clear selection">Clear</button>
     </div>
+
+    <div class="spacer"></div>
   </header>
 
   <main class="wrap">
@@ -239,7 +239,7 @@
     search.addEventListener('input', filter);
     filter();
 
-    // Selection in NAV (right side)
+    // Selection in NAV (left side)
     const selNavValue = document.getElementById('selNavValue');
     const clearNav = document.getElementById('clearNav');
 
